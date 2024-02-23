@@ -1,0 +1,87 @@
+archives:
+  - files:
+      # Ensure only built binary is archived
+      - 'none*'
+    format: zip
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+before:
+  hooks:
+    - 'go mod download'
+builds:
+  - binary: '{{ .ProjectName }}'
+    main: 'cmd/{{ .ProjectName }}/main.go'
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    goos:
+      - darwin
+      - freebsd
+      - linux
+      - windows
+    goarch:
+      - '386'
+      - amd64
+      - arm
+      - arm64
+    ignore:
+      - goarch: arm
+        goos: windows
+      - goarch: arm64
+        goos: freebsd
+      - goarch: arm64
+        goos: windows
+    ldflags:
+      - -s -w -X main.Version={{.Version}}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+
+dockers:
+  - goos: linux
+    goarch: amd64
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - "--platform=linux/amd64"
+      - "--pull"
+    use: buildx
+    image_templates:
+      - "thytonhcp/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-amd64"
+      - "thytonhcp/{{ .ProjectName }}:latest-linux-amd64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-amd64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-linux-amd64"
+  - goos: linux
+    goarch: arm64
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - "--platform=linux/arm64"
+      - "--pull"
+    use: buildx
+    image_templates:
+      - "thytonhcp/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-arm64"
+      - "thytonhcp/{{ .ProjectName }}:latest-linux-arm64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-arm64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-linux-arm64"
+
+docker_manifests:
+  - name_template: "thytonhcp/{{ .ProjectName }}:latest"
+    image_templates:
+      - "thytonhcp/{{ .ProjectName }}:latest-linux-amd64"
+      - "thytonhcp/{{ .ProjectName }}:latest-linux-arm64"
+  - name_template: "thytonhcp/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}"
+    image_templates:
+      - "thytonhcp/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-amd64"
+      - "thytonhcp/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-arm64"
+  - name_template: "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest"
+    image_templates:
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-linux-amd64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-linux-arm64"
+  - name_template: "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}"
+    image_templates:
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-amd64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-arm64"
+
+checksum:
+  algorithm: sha256
+  name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
