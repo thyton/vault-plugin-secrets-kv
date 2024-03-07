@@ -44,10 +44,8 @@ dockers:
       - "--pull"
     use: buildx
     image_templates:
-      - "thytonhcp/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-amd64"
-      - "thytonhcp/{{ .ProjectName }}:latest-linux-amd64"
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-amd64"
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-linux-amd64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-amd64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-amd64"
   - goos: linux
     goarch: arm64
     dockerfile: Dockerfile
@@ -56,28 +54,18 @@ dockers:
       - "--pull"
     use: buildx
     image_templates:
-      - "thytonhcp/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-arm64"
-      - "thytonhcp/{{ .ProjectName }}:latest-linux-arm64"
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-arm64"
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-linux-arm64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-arm64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-arm64"
 
 docker_manifests:
-  - name_template: "thytonhcp/{{ .ProjectName }}:latest"
-    image_templates:
-      - "thytonhcp/{{ .ProjectName }}:latest-linux-amd64"
-      - "thytonhcp/{{ .ProjectName }}:latest-linux-arm64"
-  - name_template: "thytonhcp/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}"
-    image_templates:
-      - "thytonhcp/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-amd64"
-      - "thytonhcp/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-arm64"
   - name_template: "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest"
     image_templates:
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-linux-amd64"
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-linux-arm64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-amd64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-arm64"
   - name_template: "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}"
     image_templates:
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-amd64"
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-linux-arm64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-amd64"
+      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-arm64"
 
 checksum:
   algorithm: sha256
@@ -85,3 +73,8 @@ checksum:
 
 snapshot:
   name_template: "{{ .Tag }}-next"
+
+release:
+  ids:
+    - none
+  disable: true
