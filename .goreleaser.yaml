@@ -8,16 +8,22 @@ before:
   hooks:
     - 'go mod download'
 builds:
-  - binary: '{{ .ProjectName }}'
-    main: 'cmd/{{ .ProjectName }}/main.go'
+  - dir: .
+    binary: '{{ .Env.PLUGIN }}'
+    main: 'cmd/{{ .Env.PLUGIN }}/main.go'
     env:
       - CGO_ENABLED=0
     flags:
       - -trimpath
+
+    # build for everything Vault supports
     goos:
       - darwin
       - freebsd
       - linux
+      - netbsd
+      - openbsd
+      - solaris
       - windows
     goarch:
       - '386'
@@ -25,47 +31,29 @@ builds:
       - arm
       - arm64
     ignore:
-      - goarch: arm
-        goos: windows
-      - goarch: arm64
-        goos: freebsd
-      - goarch: arm64
-        goos: windows
+      - goos: darwin
+        goarch: '386'
+      - goos: darwin
+        goarch: arm
+      - goos: freebsd
+        goarch: arm64
+      - goos: netbsd
+        goarch: arm64
+      - goos: openbsd
+        goarch: arm64
+      - goos: solaris
+        goarch: '386'
+      - goos: solaris
+        goarch: arm
+      - goos: solaris
+        goarch: arm64
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: arm64
     ldflags:
-      - -s -w -X main.Version={{.Version}}
+      - -s -w -X main.Version={{ .Env.PLUGIN_VERSION }}
     mod_timestamp: '{{ .CommitTimestamp }}'
-
-dockers:
-  - goos: linux
-    goarch: amd64
-    dockerfile: Dockerfile
-    build_flag_templates:
-      - "--platform=linux/amd64"
-      - "--pull"
-    use: buildx
-    image_templates:
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-amd64"
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-amd64"
-  - goos: linux
-    goarch: arm64
-    dockerfile: Dockerfile
-    build_flag_templates:
-      - "--platform=linux/arm64"
-      - "--pull"
-    use: buildx
-    image_templates:
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-arm64"
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-arm64"
-
-docker_manifests:
-  - name_template: "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest"
-    image_templates:
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-amd64"
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:latest-arm64"
-  - name_template: "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}"
-    image_templates:
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-amd64"
-      - "205325629577.dkr.ecr.us-east-1.amazonaws.com/{{ .ProjectName }}:{{ .Env.PLUGIN_VERSION }}-arm64"
 
 checksum:
   algorithm: sha256
