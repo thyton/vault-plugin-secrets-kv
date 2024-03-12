@@ -10,6 +10,7 @@ before:
 builds:
   - dir: .
     binary: '{{ .Env.PLUGIN }}'
+
     main: 'cmd/{{ .Env.PLUGIN }}/main.go'
     env:
       - CGO_ENABLED=0
