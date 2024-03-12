@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eu
 
 # usage:
 #     ./generate-dockerfile.sh vault-auth-plugin-example path/to/output/Dockerfile
@@ -26,7 +26,7 @@ if [[ ! $DOCKERFILE_PATH = */Dockerfile ]]; then
 fi
 
 # generate Dockerfile
-BASE_IMAGE="gcr.io/distroless/static-debian12"
+BASE_IMAGE=gcr.io/distroless/static-debian12
 
 cat <<EOF >$DOCKERFILE_PATH
 
@@ -34,7 +34,7 @@ FROM $BASE_IMAGE
 
 ARG TARGETPLATFORM
 
-COPY dist/$PLUGIN_NAME_$TARGETPLATFORM/$PLUGIN_NAME /bin/$PLUGIN_NAME
+COPY dist/$TARGETPLATFORM/$PLUGIN_NAME /bin/$PLUGIN_NAME
 
 ENTRYPOINT [ "/bin/$PLUGIN_NAME" ]
 
